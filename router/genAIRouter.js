@@ -1,7 +1,8 @@
 import express from "express";
 const genAIRouter = express.Router();
-import { weatherAPI } from "../controller/API.js";
+import { weatherAPI,stockAPI } from "../controller/API.js";
 import genAi from '../src/genAi.js'
+
 
 const conversationHistory = [];
 
@@ -24,18 +25,33 @@ You can handle both:
 
 - If the user is asking about future weather then you will use new Date().toISOString().split('T')[0] function to know the current date.
 
-- If the user is asking about anything else (not weather-related),
+-If the user is asking about stock, respond strictly in JSON like this:
+{
+  "stock_details_needed": true,
+  "company": [{"RELIANCE" : "RELIANCE.NS"}]
+}
+
+- If the user is asking about anything else (not weather, stock related),
   respond in JSON format like this:
 {
   "weather_details_needed": false,
+  "stock_details_needed": false,
   "general_response": "Your detailed, natural, human-like answer here."
 }
+  
 
 ### WEATHER RESPONSE FORMAT (for later use)
 If weather details are already provided, return:
 {
   "weather_details_needed": false,
   "weather_report": "Bhai Delhi ka mausam mast hai — halki thand aur halka breeze chal raha hai. 20°C temperature hai, hawa me freshness hai. 😎"
+}
+
+### STOCK RESPONSE FORMAT (for later use)
+If stock details are already provided, return:
+{
+  "stock_details_needed": false,
+  "stock_report": “Reliance (NSE) ka latest price 2895.10 hai, high 2902 aur low 2860.40 raha. Aaj 1.23% ka change dekha gaya.”
 }
 
 User asked: ${question}
@@ -71,6 +87,13 @@ User asked: ${question}
         break;
       }
 
+      //
+
+      if(response.stock_details_needed === false && response.general_response){
+        answer = response.general_response;
+        break;
+      }
+
       // ----- Handle Weather -----
       if (
         response.weather_details_needed === false &&
@@ -80,11 +103,27 @@ User asked: ${question}
         break;
       }
 
+      // ----- Handle stock -----
+      if (
+        response.stock_details_needed === false &&
+        response.stock_report
+      ) {
+        answer = response.stock_report;
+        break;
+      }
+
       // ----- Fetch Weather Info -----
       if (response.weather_details_needed === true && response.location) {
         const weatherInformation = await weatherAPI(response.location);
         const weather = JSON.stringify(weatherInformation);
         conversationHistory.push({ role: "user", parts: [{ text: weather }] });
+      }
+
+      // ----- Fetch stock Info -----
+      if (response.stock_details_needed === true && response.company) {
+        const stockInformation = await stockAPI(response.company);
+        const stock = JSON.stringify(stockInformation);
+        conversationHistory.push({ role: "user", parts: [{ text: stock }] });
       }
     }
 

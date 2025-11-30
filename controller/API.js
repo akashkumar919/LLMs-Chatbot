@@ -21,15 +21,37 @@ const weatherAPI = async (location) => {
     return weatherInfo;
   } catch (error) {
     return res.status(404).json({
-      message: "API error!",
+      message: "Failed!",
       success: false,
     });
   }
 };
 
+const stockAPI = async (symbol) => {
+  try{
+
+  const stockInfo = [];
+  for (const { company } of symbol) {
+    const response = await fetch(
+      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${process.env.STOCK_API_KEY}`
+    );
+
+    response = await response.json();
+    stockInfo.push(response);
+  }
+
+  return stockInfo;
+  }
+  catch(error){
+    return res.status(404).json({
+      success:false,
+      message:'Failed!'
+    })
+  }
+  
+};
 
 
 
 
-
-export { weatherAPI };
+export { weatherAPI, stockAPI };
