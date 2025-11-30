@@ -28,15 +28,19 @@ const weatherAPI = async (location) => {
 };
 
 const stockAPI = async (symbol) => {
-  try{
+  try{   
 
   const stockInfo = [];
-  for (const { company } of symbol) {
+  for (const { name } of symbol) {
+    
     const response = await fetch(
-      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${process.env.STOCK_API_KEY}`
+      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${name}&apikey=${process.env.STOCK_API_KEY}`
     );
 
+    
+
     response = await response.json();
+    console.log(response)
     stockInfo.push(response);
   }
 

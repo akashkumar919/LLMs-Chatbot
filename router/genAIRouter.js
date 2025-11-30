@@ -28,7 +28,7 @@ You can handle both:
 -If the user is asking about stock, respond strictly in JSON like this:
 {
   "stock_details_needed": true,
-  "company": [{"RELIANCE" : "RELIANCE.NS"}]
+  "company": [{"name" : "RELIANCE.NS"}]
 }
 
 - If the user is asking about anything else (not weather, stock related),
@@ -63,6 +63,7 @@ User asked: ${question}
 
     while (true) {
       let data = await genAi(conversationHistory);
+     
       conversationHistory.push({ role: "model", parts: [{ text: data }] });
 
       // Clean and parse JSON safely
@@ -70,8 +71,10 @@ User asked: ${question}
       data = data.replace(/```json|```/g, "").trim();
       let response;
 
+
       try {
         response = JSON.parse(data);
+        console.log(response)
       } catch (e) {
         console.log("⚠️ Invalid JSON from model. Retrying...");
         continue;
@@ -122,11 +125,15 @@ User asked: ${question}
       // ----- Fetch stock Info -----
       if (response.stock_details_needed === true && response.company) {
         const stockInformation = await stockAPI(response.company);
+        console.log(stockInformation)
         const stock = JSON.stringify(stockInformation);
+        console.log(stock)
+        console.log('hii')
         conversationHistory.push({ role: "user", parts: [{ text: stock }] });
       }
     }
 
+    console.log(answer)
     return res.status(200).json({
       answer: answer,
       success: true,

@@ -12,8 +12,11 @@ app.use(cors());
 // PUBLIC API (No authentication required)
 app.use(
   cors({
-    origin: "*",     // 💥 Allow all domains
-    methods: "GET,POST,PUT,DELETE",
+    origin: [
+      "https://llmschatbot.netlify.app",
+      "http://localhost:3000"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
