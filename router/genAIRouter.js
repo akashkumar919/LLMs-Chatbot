@@ -1,7 +1,7 @@
 import express from "express";
 const genAIRouter = express.Router();
 import { weatherAPI } from "../controller/API.js";
-import genAi from "../genAi.js";
+import genAi from '../src/genAi.js'
 
 const conversationHistory = [];
 

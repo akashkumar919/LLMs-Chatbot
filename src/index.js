@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import genAIRouter from './router/genAIRouter.js';
+import genAIRouter from '../router/genAIRouter.js';
 
 const app = express();
 app.use(express.json());
